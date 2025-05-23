@@ -1,0 +1,10 @@
+streamlit==1.32.2
+scikit-learn
+matplotlib
+shap
+pandas
+numpy
+plotly
+requests
+mlflow
+lightgbm

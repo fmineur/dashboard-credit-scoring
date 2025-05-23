@@ -1,0 +1,14 @@
+# Fichiers temporaires
+__pycache__/
+*.pyc
+
+# Environnements
+.venv/
+env/
+*.env
+
+# Cache streamlit
+.streamlit/
+
+# Notebooks de travail
+*.ipynb

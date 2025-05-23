@@ -1,0 +1,47 @@
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.9
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.0
+is_signature_from_type_hint: false
+mlflow_version: 2.21.3
+model_size_bytes: 2050749
+model_uuid: 91f623cc72fe453dbb7cd0a7709c3421
+prompts: null
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "float", "name": "OBS_30_CNT_SOCIAL_CIRCLE", "required": true},
+    {"type": "float", "name": "PREV_HOUR_APPR_PROCESS_START_MAX", "required": true},
+    {"type": "float", "name": "EXT_SOURCE_2", "required": true}, {"type": "float",
+    "name": "INSTAL_NUM_INSTALMENT_VERSION_NUNIQUE", "required": true}, {"type": "float",
+    "name": "AMT_REQ_CREDIT_BUREAU_YEAR", "required": true}, {"type": "float", "name":
+    "EXT_SOURCE_1", "required": true}, {"type": "float", "name": "EXT_SOURCE_3", "required":
+    true}, {"type": "float", "name": "INSTAL_DPD_SUM", "required": true}, {"type":
+    "float", "name": "FLOORSMAX_AVG", "required": true}, {"type": "float", "name":
+    "APPROVED_CNT_PAYMENT_MEAN", "required": true}, {"type": "float", "name": "PREV_NAME_CLIENT_TYPE_New_MEAN",
+    "required": true}, {"type": "float", "name": "INSTAL_PAYMENT_PERC_MEAN", "required":
+    true}, {"type": "float", "name": "POS_MONTHS_BALANCE_MAX", "required": true},
+    {"type": "float", "name": "INSTAL_AMT_PAYMENT_MIN", "required": true}, {"type":
+    "float", "name": "POS_MONTHS_BALANCE_SIZE", "required": true}, {"type": "float",
+    "name": "APPROVED_AMT_DOWN_PAYMENT_MEAN", "required": true}, {"type": "float",
+    "name": "DAYS_EMPLOYED_PERC", "required": true}, {"type": "float", "name": "AMT_ANNUITY",
+    "required": true}, {"type": "float", "name": "PREV_WEEKDAY_APPR_PROCESS_START_MONDAY_MEAN",
+    "required": true}, {"type": "float", "name": "BURO_DAYS_CREDIT_ENDDATE_MAX", "required":
+    true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int32", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-05-05 16:29:21.379101'
