@@ -1,6 +1,3 @@
-<!-- test commit YAML -->
-_Dernier test de build : ✅_
-
 ---
 title: "Dashboard Crédit Scoring"
 emoji: "📊"
