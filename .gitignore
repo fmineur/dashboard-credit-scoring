@@ -9,7 +9,6 @@ env/
 
 # Données sensibles ou locales
 *.pkl
-*.csv
 *.json
 
 # Cache streamlit

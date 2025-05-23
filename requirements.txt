@@ -14,3 +14,5 @@ lightgbm
 plotly
 matplotlib
 requests
+
+# trigger redeploy for Hugging Face Space

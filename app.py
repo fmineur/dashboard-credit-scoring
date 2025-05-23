@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import json
 import os
 
+#TEST
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
