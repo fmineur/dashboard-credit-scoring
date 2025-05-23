@@ -1,0 +1,27 @@
+name: Deploy Streamlit UI to Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main  # ou 'master' selon ton repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Push to Hugging Face Space
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Actions"
+          git clone https://M3R1N1:$HF_TOKEN@huggingface.co/spaces/M3R1N1/dashboard-credit-scoring hf_space
+          rsync -av --exclude '.git' ./ hf_space/
+          cd hf_space
+          git add .
+          git commit -m "🚀 Sync from GitHub repo"
+          git push
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}

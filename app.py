@@ -16,14 +16,14 @@ st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 # === Chargement des données
 @st.cache_data
 def load_data():
-    df = pd.read_csv("../data/data_clients_dashboard.csv")
-    shap_local = pd.read_csv("../data/shap_local.csv", index_col=0)
-    shap_global = pd.read_csv("../data/shap_global.csv")
+    df = pd.read_csv("data/data_clients_dashboard.csv")
+    shap_local = pd.read_csv("data/shap_local.csv", index_col=0)
+    shap_global = pd.read_csv("data/shap_global.csv")
     return df, shap_local, shap_global
 
 df, shap_local, shap_global = load_data()
-group_means = pd.read_csv("../data/grouped_means.csv", index_col=0)
-stats = pd.read_csv("../data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
+group_means = pd.read_csv("data/grouped_means.csv", index_col=0)
+stats = pd.read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
 
 # === Liste des clients (mise à jour automatique)
 client_ids = df["SK_ID_CURR"].unique().tolist()
@@ -432,7 +432,7 @@ elif view == "Saisie dossier":
     if st.button("💾 Enregistrer le dossier"):
 
         try:
-            df_clients = pd.read_csv("../data/data_clients_dashboard.csv")
+            df_clients = pd.read_csv("data/data_clients_dashboard.csv")
             new_id = df_clients["SK_ID_CURR"].max() + 1
 
             row = {
@@ -454,7 +454,7 @@ elif view == "Saisie dossier":
             }
 
             df_clients = pd.concat([df_clients, pd.DataFrame([row])], ignore_index=True)
-            df_clients.to_csv("../data/data_clients_dashboard.csv", index=False)
+            df_clients.to_csv("data/data_clients_dashboard.csv", index=False)
 
             st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
             st.cache_data.clear()
