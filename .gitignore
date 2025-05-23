@@ -1,0 +1,19 @@
+# Fichiers temporaires
+__pycache__/
+*.pyc
+
+# Environnements
+.venv/
+env/
+*.env
+
+# Données sensibles ou locales
+*.pkl
+*.csv
+*.json
+
+# Cache streamlit
+.streamlit/
+
+# Notebooks de travail
+*.ipynb

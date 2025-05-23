@@ -1,0 +1,16 @@
+---
+
+### 📦 2. `requirements.txt`
+
+Ce fichier contient les dépendances nécessaires au bon fonctionnement. Voici une version adaptée à ton projet :
+
+```txt
+streamlit==1.37.1
+pandas
+numpy
+shap
+scikit-learn
+lightgbm
+plotly
+matplotlib
+requests
