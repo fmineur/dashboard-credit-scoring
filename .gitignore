@@ -12,6 +12,3 @@ env/
 
 # Notebooks de travail
 *.ipynb
-
-#fichiers csv
-data/*.csv

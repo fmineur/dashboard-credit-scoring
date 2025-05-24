@@ -1,1 +1,1 @@
-models/LightGBM[[:space:]]Top[[:space:]]Features_final/model.pkl filter=lfs diff=lfs merge=lfs -text
+"models/LightGBM Top Features_final/model.pkl" filter=lfs diff=lfs merge=lfs -text

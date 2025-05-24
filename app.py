@@ -12,19 +12,33 @@ import os
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
+
+def is_huggingface_space():
+    return os.environ.get("SPACE_ID") is not None
+
+ON_HF_SPACE = is_huggingface_space()
+
+def smart_read_csv(path_or_url, **kwargs):
+    if ON_HF_SPACE and path_or_url.startswith("data/"):
+        # chemin sur GitHub en raw
+        filename = os.path.basename(path_or_url)
+        github_base = "https://raw.githubusercontent.com/fmineur/dashboard-credit-scoring/main/data/"
+        return pd.read_csv(github_base + filename, **kwargs)
+    return pd.read_csv(path_or_url, **kwargs)
+
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
 # === Chargement des données
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/data_clients_dashboard.csv")
-    shap_local = pd.read_csv("data/shap_local.csv", index_col=0)
-    shap_global = pd.read_csv("data/shap_global.csv")
+    df = smart_read_csv("data/data_clients_dashboard.csv")
+    shap_local = smart_read_csv("data/shap_local.csv", index_col=0)
+    shap_global = smart_read_csv("data/shap_global.csv")
     return df, shap_local, shap_global
 
 df, shap_local, shap_global = load_data()
-group_means = pd.read_csv("data/grouped_means.csv", index_col=0)
-stats = pd.read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
+group_means = smart_read_csv("data/grouped_means.csv", index_col=0)
+stats = smart_read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
 
 # === Liste des clients (mise à jour automatique)
 client_ids = df["SK_ID_CURR"].unique().tolist()
