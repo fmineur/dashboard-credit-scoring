@@ -321,26 +321,45 @@ elif view == "Moyennes comparées":
 
 
 elif view == "Visualisation Scatter":
+    import plotly.graph_objects as go
+
     st.title("📈 Scatter Plot")
-    variables = top_features + ["AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY", "AMT_GOODS_PRICE", "AMT_INCOME_TOTAL"]
+
+    variables = top_features + [
+        "AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY", "AMT_GOODS_PRICE", "AMT_INCOME_TOTAL"
+    ]
     x = st.selectbox("Variable X", variables)
     y = st.selectbox("Variable Y", variables, index=1)
 
-    # 🔧 Forçage des types numériques pour compatibilité Plotly
-    df[x] = pd.to_numeric(df[x], errors='coerce')
-    df[y] = pd.to_numeric(df[y], errors='coerce')
+    fig = go.Figure()
 
-    fig = px.scatter(df, x=x, y=y, opacity=0.3, color_discrete_sequence=["gray"])
-    fig.add_scatter(x=[client_data[x]], y=[client_data[y]], mode="markers",
-                    marker=dict(color="red", size=10), name="Client")
+    # Points des autres clients
+    fig.add_trace(go.Scattergl(
+        x=df[x],
+        y=df[y],
+        mode='markers',
+        marker=dict(color='lightgray', size=4),
+        name='Clients'
+    ))
+
+    # Point client cible
+    fig.add_trace(go.Scattergl(
+        x=[client_data[x]],
+        y=[client_data[y]],
+        mode='markers',
+        marker=dict(color='red', size=10),
+        name='Client sélectionné'
+    ))
 
     fig.update_layout(
-        height=840,
-        width=1600,
-        margin=dict(l=10, r=10, t=30, b=30)
+        height=800,
+        width=1400,
+        margin=dict(l=10, r=10, t=40, b=30),
+        title="Positionnement du client dans la population"
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 elif view == "Simulation":
     st.title("🧪 Simulation client")
