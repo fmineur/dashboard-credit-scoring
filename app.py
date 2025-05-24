@@ -13,18 +13,33 @@ import os
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
 
+import os
+
 def is_huggingface_space():
     return os.environ.get("SPACE_ID") is not None
 
 ON_HF_SPACE = is_huggingface_space()
+print("🔍 Environnement Hugging Face :", ON_HF_SPACE)
 
 def smart_read_csv(path_or_url, **kwargs):
-    if ON_HF_SPACE and path_or_url.startswith("data/"):
-        # chemin sur GitHub en raw
-        filename = os.path.basename(path_or_url)
-        github_base = "https://raw.githubusercontent.com/fmineur/dashboard-credit-scoring/main/data/"
-        return pd.read_csv(github_base + filename, **kwargs)
-    return pd.read_csv(path_or_url, **kwargs)
+    try:
+        if ON_HF_SPACE and path_or_url.startswith("data/"):
+            filename = os.path.basename(path_or_url)
+            github_base = "https://raw.githubusercontent.com/fmineur/dashboard-credit-scoring/main/data/"
+            full_url = github_base + filename
+            print(f"🌐 Chargement distant : {full_url}")
+            df = pd.read_csv(full_url, **kwargs)
+            print(f"✅ Fichier chargé avec succès depuis GitHub : {filename} — {df.shape}")
+            return df
+        else:
+            print(f"📂 Chargement local : {path_or_url}")
+            df = pd.read_csv(path_or_url, **kwargs)
+            print(f"✅ Fichier local chargé avec succès : {path_or_url} — {df.shape}")
+            return df
+    except Exception as e:
+        print(f"❌ Erreur chargement {path_or_url} :", e)
+        st.error(f"Erreur lors du chargement de {path_or_url} : {e}")
+        return pd.DataFrame()  # Retourne un df vide pour éviter crash
 
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
@@ -39,6 +54,7 @@ def load_data():
 df, shap_local, shap_global = load_data()
 group_means = smart_read_csv("data/grouped_means.csv", index_col=0)
 stats = smart_read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
+
 
 # === Liste des clients (mise à jour automatique)
 client_ids = df["SK_ID_CURR"].unique().tolist()
