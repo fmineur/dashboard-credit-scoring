@@ -280,6 +280,7 @@ elif view == "Comparaison avec voisins":
 
 elif view == "Moyennes comparées":
     st.title("📊 Comparaison aux groupes (sains vs défaut)")
+
     var = st.selectbox("Variable à comparer :", shap_local.columns.tolist())
 
     val_client = client_data[var]
@@ -301,11 +302,18 @@ elif view == "Moyennes comparées":
         y=list(data_plot.values()),
         color=list(data_plot.keys()),
         color_discrete_map={
-            "Client": "blue", "Voisins": "lightblue", "Sains": "green", "Défaut": "red"
+            "Client": "blue",
+            "Voisins": "lightblue",
+            "Sains": "green",
+            "Défaut": "red"
         },
-        height=720, width=1000
+        height=360, width=500
     )
-    fig.update_layout(margin=dict(l=10, r=10, t=30, b=30))
+    fig.update_layout(
+        margin=dict(l=10, r=10, t=30, b=30),
+        showlegend=False
+    )
+
     st.plotly_chart(fig, use_container_width=False)
 
     for k, v in data_plot.items():
