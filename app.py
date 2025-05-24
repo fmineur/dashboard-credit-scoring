@@ -326,14 +326,18 @@ elif view == "Visualisation Scatter":
     x = st.selectbox("Variable X", variables)
     y = st.selectbox("Variable Y", variables, index=1)
 
+    # 🔧 Forçage des types numériques pour compatibilité Plotly
+    df[x] = pd.to_numeric(df[x], errors='coerce')
+    df[y] = pd.to_numeric(df[y], errors='coerce')
+
     fig = px.scatter(df, x=x, y=y, opacity=0.3, color_discrete_sequence=["gray"])
     fig.add_scatter(x=[client_data[x]], y=[client_data[y]], mode="markers",
                     marker=dict(color="red", size=10), name="Client")
 
     fig.update_layout(
-    height=840,
-    width=1600,
-    margin=dict(l=10, r=10, t=30, b=30)
+        height=840,
+        width=1600,
+        margin=dict(l=10, r=10, t=30, b=30)
     )
 
     st.plotly_chart(fig, use_container_width=True)
