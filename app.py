@@ -326,36 +326,46 @@ elif view == "Visualisation Scatter":
     st.title("📈 Scatter Plot")
 
     variables = top_features + [
-        "AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY", "AMT_GOODS_PRICE", "AMT_INCOME_TOTAL"
+        "AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY",
+        "AMT_GOODS_PRICE", "AMT_INCOME_TOTAL"
     ]
     x = st.selectbox("Variable X", variables)
     y = st.selectbox("Variable Y", variables, index=1)
 
+    # Sécurité : conversion explicite en float
+    df[x] = pd.to_numeric(df[x], errors="coerce")
+    df[y] = pd.to_numeric(df[y], errors="coerce")
+
+    x_vals = df[x].tolist()
+    y_vals = df[y].tolist()
+    x_client = float(client_data[x])
+    y_client = float(client_data[y])
+
     fig = go.Figure()
 
-    # Points des autres clients
-    fig.add_trace(go.Scattergl(
-        x=df[x],
-        y=df[y],
-        mode='markers',
-        marker=dict(color='lightgray', size=4),
-        name='Clients'
+    # Ajout de tous les clients
+    fig.add_trace(go.Scatter(
+        x=x_vals,
+        y=y_vals,
+        mode="markers",
+        marker=dict(color="lightgray", size=4),
+        name="Autres clients"
     ))
 
-    # Point client cible
-    fig.add_trace(go.Scattergl(
-        x=[client_data[x]],
-        y=[client_data[y]],
-        mode='markers',
-        marker=dict(color='red', size=10),
-        name='Client sélectionné'
+    # Ajout du client sélectionné
+    fig.add_trace(go.Scatter(
+        x=[x_client],
+        y=[y_client],
+        mode="markers",
+        marker=dict(color="red", size=10),
+        name="Client sélectionné"
     ))
 
     fig.update_layout(
         height=800,
         width=1400,
-        margin=dict(l=10, r=10, t=40, b=30),
-        title="Positionnement du client dans la population"
+        title="Positionnement du client dans la population",
+        margin=dict(l=10, r=10, t=40, b=30)
     )
 
     st.plotly_chart(fig, use_container_width=True)
