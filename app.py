@@ -307,14 +307,14 @@ elif view == "Moyennes comparées":
             "Sains": "green",
             "Défaut": "red"
         },
-        height=360, width=500
+        height=720, width=1000
     )
     fig.update_layout(
         margin=dict(l=10, r=10, t=30, b=30),
         showlegend=False
     )
 
-    st.plotly_chart(fig, use_container_width=False)
+    st.plotly_chart(fig, use_container_width=True)
 
     for k, v in data_plot.items():
         st.markdown(f"- **{k}** : {v:.2f}")
@@ -336,7 +336,7 @@ elif view == "Visualisation Scatter":
     margin=dict(l=10, r=10, t=30, b=30)
     )
 
-    st.plotly_chart(fig, use_container_width=False)
+    st.plotly_chart(fig, use_container_width=True)
 
 elif view == "Simulation":
     st.title("🧪 Simulation client")
