@@ -306,7 +306,7 @@ elif view == "Moyennes comparées":
 
 
 elif view == "Visualisation Scatter":
-    st.title("📈 Scatter Plot")
+    st.title("📈 Visualisation Scatter")
 
     variables = top_features + [
         "AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY",
@@ -325,30 +325,37 @@ elif view == "Visualisation Scatter":
 
     fig = go.Figure()
 
-    # Plot all clients with WebGL + opacity
+    # Tous les clients (WebGL + transparence)
     fig.add_trace(go.Scattergl(
         x=x_vals,
         y=y_vals,
         mode="markers",
         opacity=0.2,
-        marker=dict(color="lightgray", size=4),
-        name="Autres clients"
+        marker=dict(color="lightgray", size=5),
+        name="Autres clients",
+        hoverinfo="skip"  # pas de survol inutile
     ))
 
-    # Add selected client
+    # Client sélectionné
     fig.add_trace(go.Scattergl(
         x=[x_client],
         y=[y_client],
         mode="markers",
-        marker=dict(color="red", size=10),
-        name="Client sélectionné"
+        marker=dict(color="red", size=12),
+        name="Client sélectionné",
+        hovertemplate=f"{x}: {x_client:.2f}<br>{y}: {y_client:.2f}<extra></extra>"
     ))
 
     fig.update_layout(
+        title="Positionnement du client dans la population",
+        xaxis_title=x,
+        yaxis_title=y,
         height=800,
         width=1400,
-        title="Positionnement du client dans la population",
-        margin=dict(l=10, r=10, t=40, b=30)
+        margin=dict(l=10, r=10, t=40, b=30),
+        template="plotly_white",  # fond clair et lisible
+        font=dict(size=14),
+        showlegend=True
     )
 
     st.plotly_chart(fig, use_container_width=True)
