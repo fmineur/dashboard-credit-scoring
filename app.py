@@ -442,13 +442,12 @@ elif view == "Simulation":
 elif view == "Saisie dossier":
     st.title("📝 Saisie nouveau dossier client")
 
-    # Détection nouveau client enregistré
+    # Message post-enregistrement
     new_client_created = st.session_state.get("new_id_created", None)
 
     if not os.path.exists(NEW_CLIENTS_FILE):
         st.warning("⚠️ Aucun dossier client créé précédemment.")
 
-    # Référence pour init formulaire
     ref = df[df["SK_ID_CURR"] == 100001].iloc[0]
     top_feats = top_features if "top_features" in locals() else shap_local.columns.tolist()
 
@@ -512,12 +511,11 @@ elif view == "Saisie dossier":
         except Exception as e:
             st.error(f"❌ Erreur API : {e}")
 
-    # === Enregistrement ===
-    status_placeholder = st.empty()
+    # === Enregistrement du dossier ===
     existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
     new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
 
-    if new_id not in df["SK_ID_CURR"].values:
+    if new_id not in df["SK_ID_CURR"].values and new_client_created is None:
         if st.button("💾 Enregistrer le dossier", key="save_button"):
             try:
                 row = {
@@ -546,16 +544,15 @@ elif view == "Saisie dossier":
                 st.rerun()
 
             except Exception as e:
-                status_placeholder.error(f"Erreur lors de l'enregistrement : {e}")
-    else:
+                st.error(f"Erreur lors de l'enregistrement : {e}")
+    elif new_id in df["SK_ID_CURR"].values:
         st.info("🔒 Ce dossier est déjà enregistré.")
 
-    # ✅ Affichage message post-enregistrement en bas
+    # ✅ Message de succès uniquement après création
     if new_client_created:
         st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_client_created}")
-
-    # ✅ Bouton Nouveau dossier
-    st.markdown("---")
-    if st.button("➕ Nouveau dossier"):
-        st.session_state["client_id"] = 100001
-        st.rerun()
+        st.markdown("---")
+        if st.button("➕ Nouveau dossier"):
+            st.session_state["client_id"] = 100001
+            del st.session_state["new_id_created"]
+            st.rerun()
