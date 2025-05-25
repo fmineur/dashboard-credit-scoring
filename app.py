@@ -280,49 +280,44 @@ elif view == "Comparaison avec voisins":
 
 elif view == "Moyennes comparées":
     st.title("📊 Comparaison aux groupes (sains vs défaut)")
-
     var = st.selectbox("Variable à comparer :", shap_local.columns.tolist())
 
-    val_client = client_data[var]
-    val_sains = group_means.loc[0, var]
-    val_def = group_means.loc[1, var]
+    # Conversion des données
+    df[var] = pd.to_numeric(df[var], errors="coerce")
+    val_client = float(client_data[var])
+    val_sains = float(group_means.loc[0, var])
+    val_def = float(group_means.loc[1, var])
+    val_voisins = float(neighbors_data[var].mean()) if len(neighbors_ids) > 0 else None
 
-    data_plot = {
-        "Client": val_client,
-        "Sains": val_sains,
-        "Défaut": val_def
-    }
+    x_labels = ["Client", "Sains", "Défaut"]
+    y_values = [val_client, val_sains, val_def]
+    colors = ["blue", "green", "red"]
 
-    if isinstance(neighbors_ids, list) and len(neighbors_ids) > 0:
-        val_voisins = neighbors_data[var].mean()
-        data_plot["Voisins"] = val_voisins
+    if val_voisins is not None:
+        x_labels.append("Voisins")
+        y_values.append(val_voisins)
+        colors.append("lightblue")
 
-    fig = px.bar(
-        x=list(data_plot.keys()),
-        y=list(data_plot.values()),
-        color=list(data_plot.keys()),
-        color_discrete_map={
-            "Client": "blue",
-            "Voisins": "lightblue",
-            "Sains": "green",
-            "Défaut": "red"
-        },
-        height=720, width=1000
-    )
+    fig = go.Figure(go.Bar(
+        x=x_labels,
+        y=y_values,
+        marker_color=colors
+    ))
+
     fig.update_layout(
-        margin=dict(l=10, r=10, t=30, b=30),
-        showlegend=False
+        height=720,
+        width=1000,
+        title="Comparaison moyenne par groupe",
+        margin=dict(l=10, r=10, t=30, b=30)
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
-    for k, v in data_plot.items():
+    for k, v in zip(x_labels, y_values):
         st.markdown(f"- **{k}** : {v:.2f}")
 
 
 elif view == "Visualisation Scatter":
-    import plotly.graph_objects as go
-
     st.title("📈 Scatter Plot")
 
     variables = top_features + [
