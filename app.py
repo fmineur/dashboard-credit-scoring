@@ -57,8 +57,19 @@ stats = smart_read_csv("data/dashboard_stats.csv", index_col=0, header=None).squ
 
 
 # === Liste des clients (mise à jour automatique)
-client_ids = df["SK_ID_CURR"].unique().tolist()
-client_id = st.sidebar.selectbox("📌 ID client :", client_ids)
+client_ids = df["SK_ID_CURR"].tolist()
+
+# Gestion de la sélection client + reset
+if "client_id" not in st.session_state or st.session_state.get("client_id", None) not in client_ids:
+    st.session_state["client_id"] = client_ids[0]
+
+client_id = st.selectbox("ID client :", client_ids, index=client_ids.index(st.session_state["client_id"]))
+
+# Réinitialisation après rerun
+if st.session_state.get("reset_requested", False):
+    st.session_state["reset_requested"] = False
+    st.rerun()
+
 
 # === Navigation
 view = st.sidebar.radio("📂 Section", [
@@ -393,7 +404,8 @@ elif view == "Simulation":
     st.session_state.sim_values = new_values
 
     if st.button("🔁 Réinitialiser"):
-        st.session_state.reset_simulation = True
+        st.session_state["reset_requested"] = True
+        st.session_state["client_id"] = -1  # valeur temporaire
         st.rerun()
 
     if st.button("🚀 Prédiction"):
