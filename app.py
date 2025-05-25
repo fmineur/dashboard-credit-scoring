@@ -34,7 +34,7 @@ def smart_read_csv(path_or_url, **kwargs):
 
 # Ajout de l'image dans la barre latérale
 st.sidebar.markdown("### ")
-st.sidebar.image("img/banner.png", use_column_width=True)
+st.image("img/banner.png", use_container_width=True)
 
 # === Chargement des données
 @st.cache_data
