@@ -8,12 +8,14 @@ import matplotlib.pyplot as plt
 import json
 import os
 
-# NOUVEAU TEST
+# Ajout de l'image dans la barre latérale
+st.sidebar.markdown("### ")
+st.sidebar.image("img/banner.png", use_column_width=True)
+
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
 
-import os
 
 # Détection automatique de l’environnement
 def is_huggingface_space():
@@ -66,7 +68,7 @@ is_new_client = client_id in df_new["SK_ID_CURR"].values
 # === Navigation
 view = st.sidebar.radio("📂 Section", [
     "Vue générale", "Facteurs d'influence", "Comparaison avec voisins",
-    "Moyennes comparées", "Visualisation Scatter", "Simulation", "Saisie dossier"
+    "Moyennes comparées", "Positionnement client", "Simulation", "Saisie dossier"
 ])
 
 client_data = df[df["SK_ID_CURR"] == client_id].iloc[0]
@@ -195,7 +197,7 @@ elif view == "Facteurs d'influence":
         explainer = shap.TreeExplainer(model, data=X_background, model_output="probability")
         shap_values = explainer(X_client)
 
-        st.subheader("🔍 Importance locale (Waterfall)")
+        st.subheader("🔍 Importance locale")
         shap.plots.waterfall(shap_values[0], show=False)
         fig = plt.gcf()
         fig.set_size_inches(8, 4)  # ✅ format compact
@@ -284,7 +286,7 @@ elif view == "Comparaison avec voisins":
 elif view == "Moyennes comparées":
     import plotly.graph_objects as go
 
-    st.title("📊 Comparaison aux groupes (sains vs défaut)")
+    st.title("📊 Comparaison aux groupes")
     var = st.selectbox("Variable à comparer :", shap_local.columns.tolist())
 
     # Conversion explicite
@@ -322,8 +324,8 @@ elif view == "Moyennes comparées":
         st.markdown(f"- **{k}** : {v:.2f}")
 
 
-elif view == "Visualisation Scatter":
-    st.title("📈 Visualisation Scatter")
+elif view == "Positionnement client":
+    st.title("📈 Positionnement client")
 
     variables = top_features + [
         "AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY",
