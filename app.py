@@ -279,10 +279,12 @@ elif view == "Comparaison avec voisins":
         st.dataframe(df_crd.style.apply(highlight_credit, axis=1), use_container_width=True, height=40 * len(df_crd))
 
 elif view == "Moyennes comparées":
+    import plotly.graph_objects as go
+
     st.title("📊 Comparaison aux groupes (sains vs défaut)")
     var = st.selectbox("Variable à comparer :", shap_local.columns.tolist())
 
-    # Conversion des données
+    # Conversion explicite
     df[var] = pd.to_numeric(df[var], errors="coerce")
     val_client = float(client_data[var])
     val_sains = float(group_means.loc[0, var])
