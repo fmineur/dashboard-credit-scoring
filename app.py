@@ -442,6 +442,11 @@ elif view == "Simulation":
 elif view == "Saisie dossier":
     st.title("📝 Saisie nouveau dossier client")
 
+    # Affichage du message si nouveau client vient d’être ajouté
+    if "new_id_created" in st.session_state:
+        st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {st.session_state.new_id_created}")
+        del st.session_state.new_id_created
+
     if not os.path.exists(NEW_CLIENTS_FILE):
         st.warning("⚠️ Aucun dossier client créé précédemment.")
 
@@ -508,12 +513,10 @@ elif view == "Saisie dossier":
         except Exception as e:
             st.error(f"❌ Erreur API : {e}")
 
-    if st.button("💾 Enregistrer le dossier"):
-
+    if st.button("💾 Enregistrer le dossier", key="save_button"):
         try:
             existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
             new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
-
 
             row = {
                 "SK_ID_CURR": new_id,
@@ -536,11 +539,10 @@ elif view == "Saisie dossier":
             df_new_updated = pd.concat([df_new, pd.DataFrame([row])], ignore_index=True)
             df_new_updated.to_csv(NEW_CLIENTS_FILE, index=False)
 
-
-            st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
+            # Stocker le message de succès pour affichage après redémarrage
+            st.session_state.new_id_created = new_id
             st.cache_data.clear()
             st.rerun()
 
         except Exception as e:
             st.error(f"Erreur lors de l'enregistrement : {e}")
-
