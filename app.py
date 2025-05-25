@@ -23,13 +23,6 @@ ON_HF_SPACE = is_huggingface_space()
 
 NEW_CLIENTS_FILE = "/tmp/data_new_clients.csv" if ON_HF_SPACE else "data/data_new_clients.csv"
 
-# Chargement éventuel des nouveaux clients
-if os.path.exists(NEW_CLIENTS_FILE):
-    df_new = pd.read_csv(NEW_CLIENTS_FILE)
-    df = pd.concat([df, df_new], ignore_index=True)
-else:
-    df_new = pd.DataFrame(columns=df.columns)  # structure vide par défaut
-
 def smart_read_csv(path_or_url, **kwargs):
     try:
         print(f"📂 Chargement local : {path_or_url}")
@@ -54,6 +47,13 @@ def load_data():
 df, shap_local, shap_global = load_data()
 group_means = smart_read_csv("data/grouped_means.csv", index_col=0)
 stats = smart_read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
+
+# Chargement éventuel des nouveaux clients
+if os.path.exists(NEW_CLIENTS_FILE):
+    df_new = pd.read_csv(NEW_CLIENTS_FILE)
+    df = pd.concat([df, df_new], ignore_index=True)
+else:
+    df_new = pd.DataFrame(columns=df.columns)  # structure vide par défaut
 
 # === Liste des clients (mise à jour automatique)
 client_ids = sorted(df["SK_ID_CURR"].unique().tolist())
