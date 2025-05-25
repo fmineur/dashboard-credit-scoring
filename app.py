@@ -15,6 +15,21 @@ API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
 import os
 
+# Détection automatique de l’environnement
+def is_huggingface_space():
+    return os.environ.get("SPACE_ID") is not None
+
+ON_HF_SPACE = is_huggingface_space()
+
+NEW_CLIENTS_FILE = "/tmp/data_new_clients.csv" if ON_HF_SPACE else "data/data_new_clients.csv"
+
+# Chargement éventuel des nouveaux clients
+if os.path.exists(NEW_CLIENTS_FILE):
+    df_new = pd.read_csv(NEW_CLIENTS_FILE)
+    df = pd.concat([df, df_new], ignore_index=True)
+else:
+    df_new = pd.DataFrame(columns=df.columns)  # structure vide par défaut
+
 def smart_read_csv(path_or_url, **kwargs):
     try:
         print(f"📂 Chargement local : {path_or_url}")
@@ -40,11 +55,13 @@ df, shap_local, shap_global = load_data()
 group_means = smart_read_csv("data/grouped_means.csv", index_col=0)
 stats = smart_read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
 
-
 # === Liste des clients (mise à jour automatique)
-client_ids = df["SK_ID_CURR"].unique().tolist()
+client_ids = sorted(df["SK_ID_CURR"].unique().tolist())
 client_id = st.sidebar.selectbox("📌 ID client :", client_ids)
 
+
+# ✅ Indicateur pour savoir si le client est un nouveau
+is_new_client = client_id in df_new["SK_ID_CURR"].values
 
 # === Navigation
 view = st.sidebar.radio("📂 Section", [
@@ -425,6 +442,9 @@ elif view == "Simulation":
 elif view == "Saisie dossier":
     st.title("📝 Saisie nouveau dossier client")
 
+    if not os.path.exists(NEW_CLIENTS_FILE):
+        st.warning("⚠️ Aucun dossier client créé précédemment.")
+
     ref = df[df["SK_ID_CURR"] == 100001].iloc[0]
     top_feats = top_features if "top_features" in locals() else shap_local.columns.tolist()
 
@@ -491,8 +511,9 @@ elif view == "Saisie dossier":
     if st.button("💾 Enregistrer le dossier"):
 
         try:
-            df_clients = pd.read_csv("data/data_clients_dashboard.csv")
-            new_id = df_clients["SK_ID_CURR"].max() + 1
+            existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
+            new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
+
 
             row = {
                 "SK_ID_CURR": new_id,
@@ -512,8 +533,9 @@ elif view == "Saisie dossier":
                 **input_model
             }
 
-            df_clients = pd.concat([df_clients, pd.DataFrame([row])], ignore_index=True)
-            df_clients.to_csv("data/data_clients_dashboard.csv", index=False)
+            df_new_updated = pd.concat([df_new, pd.DataFrame([row])], ignore_index=True)
+            df_new_updated.to_csv(NEW_CLIENTS_FILE, index=False)
+
 
             st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
             st.cache_data.clear()
