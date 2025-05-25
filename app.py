@@ -329,7 +329,6 @@ elif view == "Visualisation Scatter":
     x = st.selectbox("Variable X", variables)
     y = st.selectbox("Variable Y", variables, index=1)
 
-    # Sécurité : conversion explicite en float
     df[x] = pd.to_numeric(df[x], errors="coerce")
     df[y] = pd.to_numeric(df[y], errors="coerce")
 
@@ -340,17 +339,18 @@ elif view == "Visualisation Scatter":
 
     fig = go.Figure()
 
-    # Ajout de tous les clients
-    fig.add_trace(go.Scatter(
+    # Plot all clients with WebGL + opacity
+    fig.add_trace(go.Scattergl(
         x=x_vals,
         y=y_vals,
         mode="markers",
+        opacity=0.2,
         marker=dict(color="lightgray", size=4),
         name="Autres clients"
     ))
 
-    # Ajout du client sélectionné
-    fig.add_trace(go.Scatter(
+    # Add selected client
+    fig.add_trace(go.Scattergl(
         x=[x_client],
         y=[y_client],
         mode="markers",
@@ -371,15 +371,15 @@ elif view == "Visualisation Scatter":
 elif view == "Simulation":
     st.title("🧪 Simulation client")
 
-    # Changement de client → réinit
     if "previous_client_id" not in st.session_state:
         st.session_state.previous_client_id = client_id
 
-    if client_id != st.session_state.previous_client_id:
+    # Détection changement de client ou demande de reset
+    if client_id != st.session_state.previous_client_id or st.session_state.get("reset_simulation", False):
         st.session_state.sim_values = {feat: float(client_data[feat]) for feat in top_features}
         st.session_state.previous_client_id = client_id
+        st.session_state.reset_simulation = False  # Réinitialisation du flag
 
-    # Init si première fois
     if "sim_values" not in st.session_state:
         st.session_state.sim_values = {feat: float(client_data[feat]) for feat in top_features}
 
@@ -390,15 +390,12 @@ elif view == "Simulation":
         with cols[i % 2]:
             new_values[col] = st.number_input(col, value=st.session_state.sim_values.get(col, float(client_data[col])))
 
-    # Mise à jour en une seule fois
     st.session_state.sim_values = new_values
 
-    # Réinitialisation manuelle
     if st.button("🔁 Réinitialiser"):
-        st.session_state.sim_values = {feat: float(client_data[feat]) for feat in top_features}
+        st.session_state.reset_simulation = True
         st.rerun()
 
-    # Prédiction
     if st.button("🚀 Prédiction"):
         try:
             sim_values_clean = {col: st.session_state.sim_values[col] for col in top_features}
