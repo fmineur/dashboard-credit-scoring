@@ -442,11 +442,6 @@ elif view == "Simulation":
 elif view == "Saisie dossier":
     st.title("📝 Saisie nouveau dossier client")
 
-    # Affichage du message si nouveau client vient d’être ajouté
-    if "new_id_created" in st.session_state:
-        st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {st.session_state.new_id_created}")
-        del st.session_state.new_id_created
-
     if not os.path.exists(NEW_CLIENTS_FILE):
         st.warning("⚠️ Aucun dossier client créé précédemment.")
 
@@ -498,7 +493,6 @@ elif view == "Saisie dossier":
         with cols[i % 2]:
             input_model[feat] = st.number_input(feat, value=float(ref[feat]), key=f"model_input_{feat}")
 
-
     if st.button("🚀 Prédiction"):
         try:
             r = requests.post(API_URL, json=input_model)
@@ -515,7 +509,7 @@ elif view == "Saisie dossier":
             st.error(f"❌ Erreur API : {e}")
 
     status_placeholder = st.empty()
-    
+
     if st.button("💾 Enregistrer le dossier", key="save_button"):
         try:
             existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
@@ -523,7 +517,7 @@ elif view == "Saisie dossier":
 
             row = {
                 "SK_ID_CURR": new_id,
-                "CODE_GENDER": sexe,
+                "CODE_GENDER": "M" if sexe == "Male" else "F",
                 "AMT_INCOME_TOTAL": revenu,
                 "CNT_CHILDREN": enfants,
                 "NAME_FAMILY_STATUS": situation,
@@ -542,10 +536,8 @@ elif view == "Saisie dossier":
             df_new_updated = pd.concat([df_new, pd.DataFrame([row])], ignore_index=True)
             df_new_updated.to_csv(NEW_CLIENTS_FILE, index=False)
 
-            status_placeholder.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
-            st.session_state.new_id_created = new_id
             st.cache_data.clear()
-            st.rerun()
+            status_placeholder.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
 
         except Exception as e:
             status_placeholder.error(f"Erreur lors de l'enregistrement : {e}")
