@@ -15,31 +15,16 @@ API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
 import os
 
-def is_huggingface_space():
-    return os.environ.get("SPACE_ID") is not None
-
-ON_HF_SPACE = is_huggingface_space()
-print("🔍 Environnement Hugging Face :", ON_HF_SPACE)
-
 def smart_read_csv(path_or_url, **kwargs):
     try:
-        if ON_HF_SPACE and path_or_url.startswith("data/"):
-            filename = os.path.basename(path_or_url)
-            github_base = "https://raw.githubusercontent.com/fmineur/dashboard-credit-scoring/main/data/"
-            full_url = github_base + filename
-            print(f"🌐 Chargement distant : {full_url}")
-            df = pd.read_csv(full_url, **kwargs)
-            print(f"✅ Fichier chargé avec succès depuis GitHub : {filename} — {df.shape}")
-            return df
-        else:
-            print(f"📂 Chargement local : {path_or_url}")
-            df = pd.read_csv(path_or_url, **kwargs)
-            print(f"✅ Fichier local chargé avec succès : {path_or_url} — {df.shape}")
-            return df
+        print(f"📂 Chargement local : {path_or_url}")
+        df = pd.read_csv(path_or_url, **kwargs)
+        print(f"✅ Fichier chargé avec succès : {path_or_url} — {df.shape}")
+        return df
     except Exception as e:
         print(f"❌ Erreur chargement {path_or_url} :", e)
         st.error(f"Erreur lors du chargement de {path_or_url} : {e}")
-        return pd.DataFrame()  # Retourne un df vide pour éviter crash
+        return pd.DataFrame()
 
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
