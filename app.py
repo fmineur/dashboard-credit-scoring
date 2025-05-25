@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 import json
 import os
 
+st.set_page_config(page_title="Dashboard Scoring", layout="wide")
+
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
-
-
 
 # Détection automatique de l’environnement
 def is_huggingface_space():
@@ -31,8 +31,6 @@ def smart_read_csv(path_or_url, **kwargs):
         print(f"❌ Erreur chargement {path_or_url} :", e)
         st.error(f"Erreur lors du chargement de {path_or_url} : {e}")
         return pd.DataFrame()
-
-st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
 # Ajout de l'image dans la barre latérale
 st.sidebar.markdown("### ")
