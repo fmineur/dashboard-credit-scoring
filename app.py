@@ -442,21 +442,15 @@ elif view == "Simulation":
 elif view == "Saisie dossier":
     st.title("📝 Saisie nouveau dossier client")
 
-    # Préparation données
+    # Détection nouveau client enregistré
+    new_client_created = st.session_state.get("new_id_created", None)
+
     if not os.path.exists(NEW_CLIENTS_FILE):
         st.warning("⚠️ Aucun dossier client créé précédemment.")
 
+    # Référence pour init formulaire
     ref = df[df["SK_ID_CURR"] == 100001].iloc[0]
     top_feats = top_features if "top_features" in locals() else shap_local.columns.tolist()
-
-    # Détection nouvel ID client potentiel
-    existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
-    new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
-    is_created = "new_id_created" in st.session_state
-    last_created_id = st.session_state.get("new_id_created")
-
-    if is_created:
-        st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {last_created_id}")
 
     st.subheader("👤 Données client")
     col1, col2, col3, col4 = st.columns(4)
@@ -464,37 +458,37 @@ elif view == "Saisie dossier":
     with col1:
         gender_map = {"F": "Female", "M": "Male"}
         ref_gender = gender_map.get(ref["CODE_GENDER"], "Female")
-        sexe = st.selectbox("Sexe", ["Male", "Female"], index=["Male", "Female"].index(ref_gender), key="sexe")
-        enfants = st.number_input("Enfants", value=int(ref["CNT_CHILDREN"]), key="enfants")
+        sexe = st.selectbox("Sexe", ["Male", "Female"], index=["Male", "Female"].index(ref_gender))
+        enfants = st.number_input("Enfants", value=int(ref["CNT_CHILDREN"]))
     with col2:
-        revenu = st.number_input("Revenu", value=float(ref["AMT_INCOME_TOTAL"]), key="revenu")
-        emploi = st.number_input("Ancienneté emploi (ans)", value=max(0, int(ref["YEARS_EMPLOYED"])), key="emploi")
+        revenu = st.number_input("Revenu", value=float(ref["AMT_INCOME_TOTAL"]))
+        emploi = st.number_input("Ancienneté emploi (ans)", value=max(0, int(ref["YEARS_EMPLOYED"])))
     with col3:
         situation = st.selectbox("Situation", [
             "Civil marriage", "Married", "Separated", "Single / not married", "Widow"
-        ], index=1, key="situation")
+        ], index=1)
         logement = st.selectbox("Type logement", [
             "Co-op apartment", "House / apartment", "Municipal apartment", "Office apartment", "Rented apartment", "With parents"
-        ], index=1, key="logement")
+        ], index=1)
     with col4:
         education = st.selectbox("Éducation", [
             "Academic degree", "Higher education", "Incomplete higher", "Lower secondary", "Secondary / secondary special"
-        ], index=1, key="education")
+        ], index=1)
         revenu_type = st.selectbox("Type revenu", [
             "Businessman", "Commercial associate", "Pensioner", "State Servant", "Student", "Unemployed", "Working"
-        ], index=6, key="revenu_type")
-        age = st.number_input("Âge", value=max(0, int(ref["AGE"])), key="age")
+        ], index=6)
+        age = st.number_input("Âge", value=max(0, int(ref["AGE"])))
 
     st.subheader("🏦 Données crédit")
     col5, col6, col7, col8 = st.columns(4)
     with col5:
-        contrat = st.selectbox("Type contrat", ["Cash loans", "Revolving loans"], index=0, key="contrat")
+        contrat = st.selectbox("Type contrat", ["Cash loans", "Revolving loans"], index=0)
     with col6:
-        credit = st.number_input("Montant crédit", value=float(ref["AMT_CREDIT"]), key="credit")
+        credit = st.number_input("Montant crédit", value=float(ref["AMT_CREDIT"]))
     with col7:
-        annuite = st.number_input("Montant annuité", value=float(ref["AMT_ANNUITY"]), key="annuite")
+        annuite = st.number_input("Montant annuité", value=float(ref["AMT_ANNUITY"]))
     with col8:
-        biens = st.number_input("Montant biens", value=float(ref["AMT_GOODS_PRICE"]), key="biens")
+        biens = st.number_input("Montant biens", value=float(ref["AMT_GOODS_PRICE"]))
 
     st.subheader("🧮 Données modèle (20 variables)")
     input_model = {}
@@ -518,9 +512,12 @@ elif view == "Saisie dossier":
         except Exception as e:
             st.error(f"❌ Erreur API : {e}")
 
+    # === Enregistrement ===
     status_placeholder = st.empty()
+    existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
+    new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
 
-    if not is_created:
+    if new_id not in df["SK_ID_CURR"].values:
         if st.button("💾 Enregistrer le dossier", key="save_button"):
             try:
                 row = {
@@ -550,10 +547,15 @@ elif view == "Saisie dossier":
 
             except Exception as e:
                 status_placeholder.error(f"Erreur lors de l'enregistrement : {e}")
+    else:
+        st.info("🔒 Ce dossier est déjà enregistré.")
 
-    # ✅ Ajout bouton "nouveau dossier" après création uniquement
-    if is_created:
-        st.markdown("---")
-        if st.button("➕ Créer un nouveau dossier vierge"):
-            st.session_state["id_client"] = 100001
-            st.rerun()
+    # ✅ Affichage message post-enregistrement en bas
+    if new_client_created:
+        st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_client_created}")
+
+    # ✅ Bouton Nouveau dossier
+    st.markdown("---")
+    if st.button("➕ Nouveau dossier"):
+        st.session_state["client_id"] = 100001
+        st.rerun()
