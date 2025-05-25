@@ -496,7 +496,8 @@ elif view == "Saisie dossier":
     cols = st.columns(2)
     for i, feat in enumerate(top_feats):
         with cols[i % 2]:
-            input_model[feat] = st.number_input(feat, value=float(ref[feat]))
+            input_model[feat] = st.number_input(feat, value=float(ref[feat]), key=f"model_input_{feat}")
+
 
     if st.button("🚀 Prédiction"):
         try:
@@ -513,6 +514,8 @@ elif view == "Saisie dossier":
         except Exception as e:
             st.error(f"❌ Erreur API : {e}")
 
+    status_placeholder = st.empty()
+    
     if st.button("💾 Enregistrer le dossier", key="save_button"):
         try:
             existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
@@ -539,10 +542,10 @@ elif view == "Saisie dossier":
             df_new_updated = pd.concat([df_new, pd.DataFrame([row])], ignore_index=True)
             df_new_updated.to_csv(NEW_CLIENTS_FILE, index=False)
 
-            # Stocker le message de succès pour affichage après redémarrage
+            status_placeholder.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
             st.session_state.new_id_created = new_id
             st.cache_data.clear()
             st.rerun()
 
         except Exception as e:
-            st.error(f"Erreur lors de l'enregistrement : {e}")
+            status_placeholder.error(f"Erreur lors de l'enregistrement : {e}")
