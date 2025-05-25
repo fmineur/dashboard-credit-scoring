@@ -8,10 +8,6 @@ import matplotlib.pyplot as plt
 import json
 import os
 
-# Ajout de l'image dans la barre latérale
-st.sidebar.markdown("### ")
-st.sidebar.image("img/banner.png", use_column_width=True)
-
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
@@ -37,6 +33,10 @@ def smart_read_csv(path_or_url, **kwargs):
         return pd.DataFrame()
 
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
+
+# Ajout de l'image dans la barre latérale
+st.sidebar.markdown("### ")
+st.sidebar.image("img/banner.png", use_column_width=True)
 
 # === Chargement des données
 @st.cache_data
