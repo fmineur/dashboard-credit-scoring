@@ -442,6 +442,17 @@ elif view == "Simulation":
 elif view == "Saisie dossier":
     st.title("📝 Saisie nouveau dossier client")
 
+    # ✅ Message affiché après enregistrement + stop
+    if "new_id_created" in st.session_state:
+        st.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {st.session_state.new_id_created}")
+        del st.session_state.new_id_created
+        st.stop()
+
+    # ✅ Bouton pour relancer un nouveau dossier
+    if st.button("➕ Nouveau dossier vierge"):
+        st.session_state["id_client"] = 100001
+        st.rerun()
+
     if not os.path.exists(NEW_CLIENTS_FILE):
         st.warning("⚠️ Aucun dossier client créé précédemment.")
 
@@ -508,36 +519,40 @@ elif view == "Saisie dossier":
         except Exception as e:
             st.error(f"❌ Erreur API : {e}")
 
+    # ✅ Enregistrement conditionnel
     status_placeholder = st.empty()
+    existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
+    new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
 
-    if st.button("💾 Enregistrer le dossier", key="save_button"):
-        try:
-            existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
-            new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
+    if new_id not in df["SK_ID_CURR"].values:
+        if st.button("💾 Enregistrer le dossier", key="save_button"):
+            try:
+                row = {
+                    "SK_ID_CURR": new_id,
+                    "CODE_GENDER": "M" if sexe == "Male" else "F",
+                    "AMT_INCOME_TOTAL": revenu,
+                    "CNT_CHILDREN": enfants,
+                    "NAME_FAMILY_STATUS": situation,
+                    "NAME_EDUCATION_TYPE": education,
+                    "NAME_INCOME_TYPE": revenu_type,
+                    "NAME_HOUSING_TYPE": logement,
+                    "AGE": age,
+                    "YEARS_EMPLOYED": emploi,
+                    "NAME_CONTRACT_TYPE": contrat,
+                    "AMT_CREDIT": credit,
+                    "AMT_ANNUITY": annuite,
+                    "AMT_GOODS_PRICE": biens,
+                    **input_model
+                }
 
-            row = {
-                "SK_ID_CURR": new_id,
-                "CODE_GENDER": "M" if sexe == "Male" else "F",
-                "AMT_INCOME_TOTAL": revenu,
-                "CNT_CHILDREN": enfants,
-                "NAME_FAMILY_STATUS": situation,
-                "NAME_EDUCATION_TYPE": education,
-                "NAME_INCOME_TYPE": revenu_type,
-                "NAME_HOUSING_TYPE": logement,
-                "AGE": age,
-                "YEARS_EMPLOYED": emploi,
-                "NAME_CONTRACT_TYPE": contrat,
-                "AMT_CREDIT": credit,
-                "AMT_ANNUITY": annuite,
-                "AMT_GOODS_PRICE": biens,
-                **input_model
-            }
+                df_new_updated = pd.concat([df_new, pd.DataFrame([row])], ignore_index=True)
+                df_new_updated.to_csv(NEW_CLIENTS_FILE, index=False)
 
-            df_new_updated = pd.concat([df_new, pd.DataFrame([row])], ignore_index=True)
-            df_new_updated.to_csv(NEW_CLIENTS_FILE, index=False)
+                st.session_state.new_id_created = new_id
+                st.cache_data.clear()
+                st.rerun()
 
-            st.cache_data.clear()
-            status_placeholder.success(f"✅ Nouveau dossier enregistré avec SK_ID_CURR = {new_id}")
-
-        except Exception as e:
-            status_placeholder.error(f"Erreur lors de l'enregistrement : {e}")
+            except Exception as e:
+                status_placeholder.error(f"Erreur lors de l'enregistrement : {e}")
+    else:
+        st.info("🔒 Ce dossier est déjà enregistré.")
