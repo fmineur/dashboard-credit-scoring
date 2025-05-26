@@ -40,11 +40,10 @@ st.image("img/banner.png", use_container_width=True)
 @st.cache_data
 def load_data():
     df = smart_read_csv("data/data_clients_dashboard.csv")
-    shap_local = smart_read_csv("data/shap_local.csv", index_col=0)
     shap_global = smart_read_csv("data/shap_global.csv")
-    return df, shap_local, shap_global
+    return df, shap_global
 
-df, shap_local, shap_global = load_data()
+df, shap_global = load_data()
 group_means = smart_read_csv("data/grouped_means.csv", index_col=0)
 stats = smart_read_csv("data/dashboard_stats.csv", index_col=0, header=None).squeeze("columns").to_dict()
 
@@ -81,7 +80,7 @@ except Exception:
 
 neighbors_data = df[df["SK_ID_CURR"].isin(neighbors_ids)]
 
-top_features = shap_local.columns.tolist()
+top_features = shap_global["Feature"].tolist()
 
 
 def format_number(val): return f"{int(val):,}".replace(",", " ") if pd.notnull(val) else "NC"
@@ -285,7 +284,7 @@ elif view == "Moyennes comparées":
     import plotly.graph_objects as go
 
     st.title("📊 Comparaison aux groupes")
-    var = st.selectbox("Variable à comparer :", shap_local.columns.tolist())
+    var = st.selectbox("Variable à comparer :", shap_global["Feature"].tolist())
 
     # Conversion explicite
     df[var] = pd.to_numeric(df[var], errors="coerce")
@@ -449,7 +448,7 @@ elif view == "Saisie dossier":
         st.warning("⚠️ Aucun dossier client créé précédemment.")
 
     ref = df[df["SK_ID_CURR"] == 100001].iloc[0]
-    top_feats = top_features if "top_features" in locals() else shap_local.columns.tolist()
+    top_feats = top_features if "top_features" in locals() else shap_global["Feature"].tolist()
 
     st.subheader("👤 Données client")
     col1, col2, col3, col4 = st.columns(4)
