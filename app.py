@@ -11,11 +11,22 @@ import os
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
 st.markdown("""
-<style>
-body, div, input, label, textarea, select, button {
-    font-size: 16px !important;
-}
-</style>
+    <style>
+    /* Titres */
+    h1, h2, h3 {
+        font-size: 1.4em !important;
+    }
+
+    /* Texte global Streamlit */
+    .stMarkdown, .css-18e3th9, .css-1d391kg {
+        font-size: 1.2em !important;
+    }
+
+    /* Amélioration tables et textes dans les dataframes stylées */
+    .stDataFrame div {
+        font-size: 1.1em;
+    }
+    </style>
 """, unsafe_allow_html=True)
 
 
