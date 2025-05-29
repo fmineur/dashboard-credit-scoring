@@ -370,8 +370,8 @@ elif view == "Moyennes comparées":
         st.markdown(f"- **{k}** : {v:.2f}")
 
 
-elif view == "Positionnement du client dans la population":
-    st.title("📈 Positionnement client")
+elif view == "Positionnement client":
+    st.title("📈 Positionnement du client dans la population")
 
     variables = top_features + [
         "AGE", "YEARS_EMPLOYED", "AMT_CREDIT", "AMT_ANNUITY",
@@ -412,7 +412,6 @@ elif view == "Positionnement du client dans la population":
     ))
 
     fig.update_layout(
-        title="Positionnement du client dans la population",
         xaxis_title=x,
         yaxis_title=y,
         height=800,
