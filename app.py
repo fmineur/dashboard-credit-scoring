@@ -333,7 +333,7 @@ elif view == "Comparaison avec voisins":
 elif view == "Moyennes comparées":
     import plotly.graph_objects as go
 
-    st.title("📊 Comparaison aux groupes")
+    st.title("📊 Comparaison moyenne par groupe")
     var = st.selectbox("Variable à comparer :", shap_global["Feature"].tolist())
 
     # Conversion explicite
@@ -361,7 +361,6 @@ elif view == "Moyennes comparées":
     fig.update_layout(
         height=720,
         width=1000,
-        title="Comparaison moyenne par groupe",
         margin=dict(l=10, r=10, t=30, b=30)
     )
 
@@ -371,7 +370,7 @@ elif view == "Moyennes comparées":
         st.markdown(f"- **{k}** : {v:.2f}")
 
 
-elif view == "Positionnement client":
+elif view == "Positionnement du client dans la population":
     st.title("📈 Positionnement client")
 
     variables = top_features + [
@@ -413,7 +412,6 @@ elif view == "Positionnement client":
     ))
 
     fig.update_layout(
-        title="Positionnement du client dans la population",
         xaxis_title=x,
         yaxis_title=y,
         height=800,
