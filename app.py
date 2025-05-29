@@ -388,7 +388,7 @@ elif view == "Positionnement client":
         y=y_vals,
         mode="markers",
         opacity=0.2,
-        marker=dict(color="lightgray", size=5),
+        marker=dict(color="dimgray", size=5),
         name="Autres clients",
         hoverinfo="skip"  # pas de survol inutile
     ))
@@ -555,7 +555,11 @@ elif view == "Saisie dossier":
     existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
     new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
 
-    if new_id not in df["SK_ID_CURR"].values and new_client_created is None:
+    if (
+        new_id not in df["SK_ID_CURR"].values
+        and "new_id_created" not in st.session_state
+        and new_client_created is None
+    ):
         if st.button("💾 Enregistrer le dossier", key="save_button"):
             try:
                 row = {
