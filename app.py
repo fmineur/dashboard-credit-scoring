@@ -10,6 +10,15 @@ import os
 
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
+st.markdown("""
+<style>
+body, div, input, label, textarea, select, button {
+    font-size: 16px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
 
@@ -125,13 +134,19 @@ if view == "Vue générale":
 
     with col3:
         st.subheader("🧮 Données modèle (1/2)")
-        for i in range(10):
-            st.write(f"{top_features[i]}: {round(client_data[top_features[i]], 2)}")
+        df_model_1 = pd.DataFrame({
+            "Champ": top_features[:10],
+            "Valeur": [round(client_data[feat], 2) for feat in top_features[:10]]
+        })
+        st.dataframe(df_model_1, hide_index=True, use_container_width=True)
 
     with col4:
         st.subheader("🧮 Données modèle (2/2)")
-        for i in range(10, 20):
-            st.write(f"{top_features[i]}: {round(client_data[top_features[i]], 2)}")
+        df_model_2 = pd.DataFrame({
+            "Champ": top_features[10:],
+            "Valeur": [round(client_data[feat], 2) for feat in top_features[10:]]
+        })
+        st.dataframe(df_model_2, hide_index=True, use_container_width=True)
 
     st.markdown("---")
 
