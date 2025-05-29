@@ -90,28 +90,38 @@ if view == "Vue générale":
     st.title("📊 Dashboard Crédit Scoring")
     col1, col2, col3, col4 = st.columns([1.3, 1.3, 1.2, 1.2])
 
+# Bloc 1 : Données client
     with col1:
         st.subheader("👤 Données client")
-        st.write({
-            "Sexe": "Male" if client_data["CODE_GENDER"] == "M" else "Female",
-            "Revenu": f"{client_data['AMT_INCOME_TOTAL']:,.2f}".replace(",", " ").replace(".00", ""),
-            "Enfants": int(client_data["CNT_CHILDREN"]),
-            "Situation": client_data["NAME_FAMILY_STATUS"],
-            "Éducation": client_data["NAME_EDUCATION_TYPE"],
-            "Type revenu": client_data["NAME_INCOME_TYPE"],
-            "Type logement": client_data["NAME_HOUSING_TYPE"],
-            "Âge": max(0, int(client_data["AGE"])) if pd.notnull(client_data["AGE"]) else "NC",
-            "Ancienneté emploi (ans)": max(0, int(client_data["YEARS_EMPLOYED"])) if pd.notnull(client_data["YEARS_EMPLOYED"]) else "NC"
+        df_client_info = pd.DataFrame({
+            "Champ": ["Sexe", "Revenu", "Enfants", "Situation", "Éducation", "Type revenu", "Type logement", "Âge",        "Ancienneté emploi (ans)"],
+            "Valeur": [
+                "Male" if client_data["CODE_GENDER"] == "M" else "Female",
+                f"{client_data['AMT_INCOME_TOTAL']:,.0f}".replace(",", " "),
+                int(client_data["CNT_CHILDREN"]),
+                client_data["NAME_FAMILY_STATUS"],
+                client_data["NAME_EDUCATION_TYPE"],
+                client_data["NAME_INCOME_TYPE"],
+                client_data["NAME_HOUSING_TYPE"],
+                max(0, int(client_data["AGE"])) if pd.notnull(client_data["AGE"]) else "NC",
+                max(0, int(client_data["YEARS_EMPLOYED"])) if pd.notnull(client_data["YEARS_EMPLOYED"]) else "NC"
+            ]
         })
+        st.dataframe(df_client_info, hide_index=True, use_container_width=True)
 
+# Bloc 2 : Données crédit
     with col2:
         st.subheader("🏦 Données crédit")
-        st.write({
-            "Type contrat": client_data["NAME_CONTRACT_TYPE"],
-            "Montant crédit": f"{client_data['AMT_CREDIT']:,.2f}".replace(",", " ").replace(".00", ""),
-            "Montant annuité": f"{client_data['AMT_ANNUITY']:,.2f}".replace(",", " ").replace(".00", ""),
-            "Montant biens": f"{client_data['AMT_GOODS_PRICE']:,.2f}".replace(",", " ").replace(".00", ""),
+        df_credit_info = pd.DataFrame({
+            "Champ": ["Type contrat", "Montant crédit", "Montant annuité", "Montant biens"],
+            "Valeur": [
+                client_data["NAME_CONTRACT_TYPE"],
+                f"{client_data['AMT_CREDIT']:,.0f}".replace(",", " "),
+                f"{client_data['AMT_ANNUITY']:,.0f}".replace(",", " "),
+                f"{client_data['AMT_GOODS_PRICE']:,.0f}".replace(",", " ")
+            ]
         })
+        st.dataframe(df_credit_info, hide_index=True, use_container_width=True)
 
     with col3:
         st.subheader("🧮 Données modèle (1/2)")
@@ -167,12 +177,17 @@ if view == "Vue générale":
         statut = "💥 Risque de défaut" if pred == 1 else "✅ Client sain"
         st.markdown(f"### **Statut : {statut}**")
         st.markdown("#### Moyennes contextuelles")
-        st.write({
-            "Voisins": f"{client_data['mean_proba_neighbors'] * 100:.2f}%",
-            "Global": f"{stats['mean_proba_global'] * 100:.2f}%",
-            "Taux défaut voisins": f"{client_data['default_rate_neighbors'] * 100:.2f}%",
-            "Taux défaut global": f"{stats['defaut_rate_global'] * 100:.2f}%"
+
+        df_moyennes = pd.DataFrame({
+            "Champ": ["Voisins", "Global", "Taux défaut voisins", "Taux défaut global"],
+            "Valeur": [
+                f"{client_data['mean_proba_neighbors'] * 100:.2f}%",
+                f"{stats['mean_proba_global'] * 100:.2f}%",
+                f"{client_data['default_rate_neighbors'] * 100:.2f}%",
+                f"{stats['defaut_rate_global'] * 100:.2f}%"
+            ]
         })
+        st.dataframe(df_moyennes, hide_index=True, use_container_width=True)
 
     if warning_message:
         st.warning("⚠️ Utilisation des valeurs locales de prédiction")
