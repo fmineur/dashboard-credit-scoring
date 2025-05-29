@@ -10,25 +10,35 @@ import os
 
 st.set_page_config(page_title="Dashboard Scoring", layout="wide")
 
+# Personnalisation globale via CSS
 st.markdown("""
     <style>
-    /* Titres */
-    h1, h2, h3 {
-        font-size: 1.4em !important;
-    }
+        /* Augmenter la taille par défaut */
+        html, body, [class*="css"] {
+            font-size: 18px !important;
+        }
 
-    /* Texte global Streamlit */
-    .stMarkdown, .css-18e3th9, .css-1d391kg {
-        font-size: 1.2em !important;
-    }
+        /* Titres Streamlit */
+        h1, h2, h3, h4 {
+            font-size: 26px !important;
+        }
 
-    /* Amélioration tables et textes dans les dataframes stylées */
-    .stDataFrame div {
-        font-size: 1.1em;
-    }
+        /* Boutons */
+        button, .stButton button {
+            font-size: 18px !important;
+        }
+
+        /* Champs d'entrée */
+        .stNumberInput input, .stSelectbox, .stTextInput input {
+            font-size: 17px !important;
+        }
+
+        /* Données tabulaires */
+        .stDataFrame th, .stDataFrame td {
+            font-size: 16px !important;
+        }
     </style>
 """, unsafe_allow_html=True)
-
 
 # === Configuration API ===
 API_URL = "https://m3r1n1-credit-scoring-api.hf.space/predict"
@@ -240,7 +250,6 @@ elif view == "Facteurs d'influence":
         fig = plt.gcf()
         fig.set_size_inches(8, 4)  # ✅ format compact
         st.pyplot(fig)
-        st.markdown(f"**🔹 Moyenne prédiction fond (E[f(X)]) :** {shap_values.base_values[0]:.4f}")
 
     except Exception as e:
         st.warning("⚠️ Affichage SHAP waterfall non supporté ici.")
