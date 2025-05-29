@@ -412,6 +412,7 @@ elif view == "Positionnement du client dans la population":
     ))
 
     fig.update_layout(
+        title="Positionnement du client dans la population",
         xaxis_title=x,
         yaxis_title=y,
         height=800,
