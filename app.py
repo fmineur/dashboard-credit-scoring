@@ -562,12 +562,9 @@ elif view == "Saisie dossier":
     existing_ids = pd.concat([df[["SK_ID_CURR"]], df_new[["SK_ID_CURR"]]])["SK_ID_CURR"]
     new_id = existing_ids.max() + 1 if not existing_ids.empty else 500000
 
-    if (
-        new_id not in df["SK_ID_CURR"].values
-        and "new_id_created" not in st.session_state
-        and new_client_created is None
-    ):
-        if st.button("💾 Enregistrer le dossier", key="save_button"):
+
+    if new_client_created is None:
+         if st.button("💾 Enregistrer le dossier", key="save_button"):
             try:
                 row = {
                     "SK_ID_CURR": new_id,
@@ -596,7 +593,7 @@ elif view == "Saisie dossier":
 
             except Exception as e:
                 st.error(f"Erreur lors de l'enregistrement : {e}")
-    elif new_id in df["SK_ID_CURR"].values:
+    else:
         st.info("🔒 Ce dossier est déjà enregistré.")
 
     # ✅ Message de succès uniquement après création
