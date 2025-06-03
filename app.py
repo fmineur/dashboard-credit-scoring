@@ -238,7 +238,7 @@ elif view == "Facteurs d'influence":
     from mlflow.sklearn import load_model
 
     try:
-        model = load_model("models/LightGBM Top Features_final")
+        model = load_model("../models/LightGBM Top Features_final")
         X_client = pd.DataFrame([client_data[top_features]], columns=top_features).astype(float)
 
         X_background = df[top_features].sample(n=100, random_state=42)
@@ -250,7 +250,7 @@ elif view == "Facteurs d'influence":
         fig = plt.gcf()
         fig.set_size_inches(8, 4)  # ✅ format compact
         st.pyplot(fig)
-
+        st.markdown(f"**🔹 Moyenne prédiction fond (E[f(X)]) :** {shap_values.base_values[0]:.4f}")
     except Exception as e:
         st.warning("⚠️ Affichage SHAP waterfall non supporté ici.")
         st.error(f"(erreur : {e})")
