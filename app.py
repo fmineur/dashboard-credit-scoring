@@ -64,8 +64,7 @@ def smart_read_csv(path_or_url, **kwargs):
 
 # Ajout de l'image dans la barre latérale
 st.sidebar.markdown("### ")
-st.sidebar.image("img/banner.png", use_container_width=True, caption="Logo : Prêt à dépenser", alt="Bannière Prêt à dépenser avec cartes bancaires")
-
+st.sidebar.image("img/banner.png", use_column_width=True, caption="Prêt à dépenser — Interface de scoring crédit", output_format="auto")
 
 # === Chargement des données
 @st.cache_data
