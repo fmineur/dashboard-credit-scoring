@@ -238,7 +238,7 @@ elif view == "Facteurs d'influence":
     from mlflow.sklearn import load_model
 
     try:
-        model = load_model("../models/LightGBM Top Features_final")
+        model = load_model("models/LightGBM Top Features_final")
         X_client = pd.DataFrame([client_data[top_features]], columns=top_features).astype(float)
 
         X_background = df[top_features].sample(n=100, random_state=42)
