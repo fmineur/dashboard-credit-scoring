@@ -88,6 +88,9 @@ else:
 client_ids = sorted(df["SK_ID_CURR"].unique().tolist())
 client_id = st.sidebar.selectbox("📌 ID client :", client_ids)
 
+# ✅ Reset session_state si on change de vue
+if view != "Saisie dossier" and "new_id_created" in st.session_state:
+    del st.session_state["new_id_created"]
 
 # ✅ Indicateur pour savoir si le client est un nouveau
 is_new_client = client_id in df_new["SK_ID_CURR"].values
