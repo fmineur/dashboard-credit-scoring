@@ -241,7 +241,8 @@ elif view == "Facteurs d'influence":
         model = load_model("models/LightGBM Top Features_final")
         X_client = pd.DataFrame([client_data[top_features]], columns=top_features).astype(float)
 
-        X_background = df[top_features].sample(n=100, random_state=42)
+        X_background = df[top_features].copy()
+
         explainer = shap.TreeExplainer(model, data=X_background, model_output="probability")
         shap_values = explainer(X_client)
 
