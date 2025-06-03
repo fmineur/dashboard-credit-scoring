@@ -110,8 +110,15 @@ except Exception:
 
 neighbors_data = df[df["SK_ID_CURR"].isin(neighbors_ids)]
 
-top_features = shap_global["Feature"].tolist()
-
+top_features = [
+    'OBS_30_CNT_SOCIAL_CIRCLE', 'PREV_HOUR_APPR_PROCESS_START_MAX', 'EXT_SOURCE_2',
+    'INSTAL_NUM_INSTALMENT_VERSION_NUNIQUE', 'AMT_REQ_CREDIT_BUREAU_YEAR', 'EXT_SOURCE_1',
+    'EXT_SOURCE_3', 'INSTAL_DPD_SUM', 'FLOORSMAX_AVG', 'APPROVED_CNT_PAYMENT_MEAN',
+    'PREV_NAME_CLIENT_TYPE_New_MEAN', 'INSTAL_PAYMENT_PERC_MEAN', 'POS_MONTHS_BALANCE_MAX',
+    'INSTAL_AMT_PAYMENT_MIN', 'POS_MONTHS_BALANCE_SIZE', 'APPROVED_AMT_DOWN_PAYMENT_MEAN',
+    'DAYS_EMPLOYED_PERC', 'AMT_ANNUITY', 'PREV_WEEKDAY_APPR_PROCESS_START_MONDAY_MEAN',
+    'BURO_DAYS_CREDIT_ENDDATE_MAX'
+]
 
 def format_number(val): return f"{int(val):,}".replace(",", " ") if pd.notnull(val) else "NC"
 
@@ -251,7 +258,6 @@ elif view == "Facteurs d'influence":
         fig = plt.gcf()
         fig.set_size_inches(8, 4)  # ✅ format compact
         st.pyplot(fig)
-        st.markdown(f"**🔹 Moyenne prédiction fond (E[f(X)]) :** {shap_values.base_values[0]:.4f}")
     except Exception as e:
         st.warning("⚠️ Affichage SHAP waterfall non supporté ici.")
         st.error(f"(erreur : {e})")
