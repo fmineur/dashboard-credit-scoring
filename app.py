@@ -88,6 +88,10 @@ else:
 client_ids = sorted(df["SK_ID_CURR"].unique().tolist())
 client_id = st.sidebar.selectbox("📌 ID client :", client_ids)
 
+# ✅ Suppression du flag après sélection du nouveau client
+if "new_id_created" in st.session_state and client_id == st.session_state["new_id_created"]:
+    del st.session_state["new_id_created"]
+
 # ✅ Indicateur pour savoir si le client est un nouveau
 is_new_client = client_id in df_new["SK_ID_CURR"].values
 
@@ -96,10 +100,6 @@ view = st.sidebar.radio("📂 Section", [
     "Vue générale", "Facteurs d'influence", "Comparaison avec voisins",
     "Moyennes comparées", "Positionnement client", "Simulation", "Saisie dossier"
 ])
-
-# ✅ Reset session_state si on change de vue
-if view != "Saisie dossier" and "new_id_created" in st.session_state:
-    del st.session_state["new_id_created"]
 
 client_data = df[df["SK_ID_CURR"] == client_id].iloc[0]
 
